@@ -91,7 +91,7 @@ console.log(fn)  //3
 ```
 
 
-## 引用类型
+## 2.引用类型
 
 ```
 var arr1 = [1, 2, 3]
@@ -154,7 +154,7 @@ function incObject(){
 }
 ```
 
-## 函数作用域链
+## 3.函数作用域链
 
 ```
 var a = 1
@@ -182,15 +182,17 @@ var fn = fn1()
 fn() //输出多少
 ```
 
-## explain
+### explain
 
     函数在执行的过程中，先从自己内部找变量
     如果找不到，再从创建当前函数所在的作用域去找, 以此往上
 
 
-## 闭包
+## 4.闭包
 
     A closure is the combination of a function and the lexical environment within which that function was declared.  -- from MDN
+
+闭包就是一个函数及其词法环境的集合。如下方return的函数及其执行环境。
 
 ```
 function bindName(name){
@@ -217,3 +219,40 @@ var doing = bindName('jirengu')
 
 ## explain
 因为 doing 在全局作用域永远无法被释放，导致 bindName 里声明的fn 和 name 一直存在， 执行 doing 时会从创建 fn 所在的作用域获取 name
+
+
+
+## 5.跨域
+
+同域是指： 同协议  同域名  同端口
+
+浏览器禁止访问的场景：
+
+    1.js 里发送 ajax 请求，如果请求的 url 和当前页面的 url 非同域，则浏览器拒绝提供接受的数据并报错
+    2.当前页面下引入iframe，如果 iframe 里的页面和当前页面的 url 非同域， 则浏览器禁止当前页面的 js 获取或者操作 iframe下页面的 DOM
+
+对于禁止访问的场景1， 有两种方法能绕过浏览器的限制，一种是 JSONP，另外一种是 CORS
+
+对于禁止访问的场景2， 如果两个页面拥有相同的一级域名(a.jirengu.com 和 b.jirengu.com)可通过降域的方式。 如果是不同域名，可使用
+PostMessage
+
+### 5.1 JSONP
+假设用户想调用 http://api.jirengu.com/weather.php 这个接口获取天气数据，但直接通过 ajax 获取数据会报错。
+
+可以创建一个script 标签`<script src="http://api.jirengu.com/weathr.php?callback=showData"></script>`
+这个请求到达后端后，后端会去解析callback这个参数获取到字符串showData，在发送 天气数据做如下处理：
+
+    之前后端返回数据： {"city": "hangzhou", "weather": "晴天"}
+    现在后端返回数据： showData({"city": "hangzhou", "weather": "晴天"})
+
+前端script标签在加载数据后会把 showData({"city": "hangzhou", "weather": "晴天"})做为 js 来执行，这实际上就是调用showData这个函数，同时参数是 {"city": "hangzhou", "weather": "晴天"}
+
+用户只需要在加载提前在页面定义好showData这个全局函数，在函数内部处理参数即可
+
+总结：JSONP是通过 script 标签加载数据的方式去获取数据当做 JS 代码来执行
+提前在页面上声明一个函数，函数名通过接口传参的方式传给后台，后台解析到函数名后在原始数据上包裹这个函数名，发送给前端。换句话说，JSONP 需要对应接口的后端的配合才能实现。
+
+
+### 5.2 CORS
+
+CORS 全称是跨域资源共享（Cross-Origin Resource Sharing），是一种 ajax 跨域请求资源的方式，支持现代浏览器，IE支持10以上。 实现方式很简单，当你使用 XMLHttpRequest 发送请求时，浏览器发现该请求不符合同源策略，会给该请求加一个请求头：Origin，后台进行一系列处理，如果确定接受请求则在返回结果中加入一个响应头：Access-Control-Allow-Origin; 浏览器判断该相应头中是否包含 Origin 的值，如果有则浏览器会处理响应，我们就可以拿到响应数据，如果不包含浏览器直接驳回，这时我们无法拿到响应数据。所以 CORS 的表象是让你觉得它与同源的 ajax 请求没啥区别，代码完全一样。
