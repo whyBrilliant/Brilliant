@@ -1,10 +1,8 @@
-var a = 1
-function fn1(){
-  function fn2(){
-    console.log(a)
-  }
-  var a = 2
-  return fn2
-}
-var fn = fn1()
-fn() //输出多少
+var fn = 2
+function fn(){}
+
+function fn1() {}
+var fn1 = 1
+
+console.log(fn)
+console.log(fn1)
