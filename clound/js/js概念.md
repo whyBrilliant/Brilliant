@@ -256,3 +256,30 @@ PostMessage
 ### 5.2 CORS
 
 CORS 全称是跨域资源共享（Cross-Origin Resource Sharing），是一种 ajax 跨域请求资源的方式，支持现代浏览器，IE支持10以上。 实现方式很简单，当你使用 XMLHttpRequest 发送请求时，浏览器发现该请求不符合同源策略，会给该请求加一个请求头：Origin，后台进行一系列处理，如果确定接受请求则在返回结果中加入一个响应头：Access-Control-Allow-Origin; 浏览器判断该相应头中是否包含 Origin 的值，如果有则浏览器会处理响应，我们就可以拿到响应数据，如果不包含浏览器直接驳回，这时我们无法拿到响应数据。所以 CORS 的表象是让你觉得它与同源的 ajax 请求没啥区别，代码完全一样。
+
+
+## 对象
+
+```
+function People(name){
+  this.name = name
+}
+People.prototype.sayName = function(){
+  console.log(`My name is ${this.name}`)
+}
+var p = new People('jirengu')
+p.sayName()
+```
+
+new function...时发生了什么？
+* 1.创建一个空对象，把一个空的对象的 proto 属性设置为 People.prototype
+* 2.执行函数 People， 函数里面的 this 代表刚刚创建的新对象
+* 3.返回这个对象
+
+对于第3步，如果构造函数里有 return，分情况讨论。 如果 return 的是基本类型，会忽略不计。 如果 return 的是引用类型，则返回这个引用类型。
+
+![](../../pic/prototype.jpg)
+
+Tip：任何函数都有 .prototype 这个属性，对应的值是一个对象叫原型对象，这个原型对象可以被由这个函数 new 的所有对象共享。
+
+
